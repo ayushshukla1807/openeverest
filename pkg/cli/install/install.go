@@ -385,13 +385,13 @@ func (o *Installer) namespaceExists(ctx context.Context, namespace string) (bool
 		if k8serrors.IsNotFound(err) {
 			return false, nil
 		}
-		return false, fmt.Errorf("cannot check if namesapce exists: %w", err)
+		return false, fmt.Errorf("cannot check if namespace exists: %w", err)
 	}
 	return true, nil
 }
 
-// CheckEverestAlreadyinstalled checks if Everest is already installed.
-func CheckEverestAlreadyinstalled(ctx context.Context, l *zap.SugaredLogger, kubeConfig string) error {
+// CheckEverestAlreadyInstalled checks if Everest is already installed.
+func CheckEverestAlreadyInstalled(ctx context.Context, l *zap.SugaredLogger, kubeConfig string) error {
 	kubeClient, err := cliutils.NewKubeConnector(l, kubeConfig)
 	if err != nil {
 		return fmt.Errorf("failed to create kubernetes client: %w", err)

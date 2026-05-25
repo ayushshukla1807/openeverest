@@ -90,7 +90,7 @@ func installPreRun(cmd *cobra.Command, _ []string) { //nolint:revive
 	installCfg.NamespaceAddConfig.KubeconfigPath = rootCmdFlags.KubeconfigPath
 
 	// Check if Everest is already installed.
-	if err := install.CheckEverestAlreadyinstalled(cmd.Context(), logger.GetLogger(), installCfg.KubeconfigPath); err != nil {
+	if err := install.CheckEverestAlreadyInstalled(cmd.Context(), logger.GetLogger(), installCfg.KubeconfigPath); err != nil {
 		output.PrintError(err, logger.GetLogger(), installCfg.Pretty)
 		os.Exit(1)
 	}
