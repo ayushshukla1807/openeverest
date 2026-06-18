@@ -119,15 +119,30 @@ func refreshEnforcerInBackground(
 		if !ok || cm.GetName() != common.EverestRBACConfigMapName {
 			return
 		}
+		// Create a temporary enforcer to validate the new policy
+		cmReq := types.NamespacedName{
+			Namespace: common.SystemNamespace,
+			Name:      common.EverestRBACConfigMapName,
+		}
+		adapter := configmapadapter.New(l, kubeConnector, cmReq)
+		tempEnf, err := newEnforcer(adapter, false)
+		if err != nil {
+			l.Errorf("invalid policy detected, keeping previous state - %s", err)
+			return
+		}
+
 		if err := enforcer.LoadPolicy(); err != nil {
-			panic("invalid policy detected - " + err.Error())
+			l.Errorf("invalid policy detected on reload - %s", err.Error())
+			return
 		}
 		if err := validatePolicy(enforcer); err != nil {
-			panic("invalid policy detected - " + err.Error())
+			l.Errorf("invalid policy detected - %s", err.Error())
+			return
 		}
 		// Calling LoadPolicy() re-writes the entire model, so we need to add back the admin role.
 		if err := loadAdminPolicy(enforcer); err != nil {
-			panic("failed to load admin policy - " + err.Error())
+			l.Errorf("failed to load admin policy - %s", err.Error())
+			return
 		}
 		enforcer.EnableEnforce(IsEnabled(cm))
 	})
