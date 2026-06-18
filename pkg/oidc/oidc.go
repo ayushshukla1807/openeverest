@@ -24,6 +24,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/lestrrat-go/jwx/v2/jwk"
@@ -60,7 +61,10 @@ func NewProviderConfig(ctx context.Context, issuer string) (ProviderConfig, erro
 	if err != nil {
 		return ProviderConfig{}, err
 	}
-	resp, err := http.DefaultClient.Do(req)
+	client := &http.Client{
+		Timeout: 30 * time.Second,
+	}
+	resp, err := client.Do(req)
 	if err != nil {
 		return ProviderConfig{}, err
 	}
